@@ -1,41 +1,35 @@
-import { Router, Request, Response } from 'express';
-import bcrypt from 'bcrypt';
-import { PrismaClient } from '@prisma/client';
+import { Router } from 'express';
+import { registerUser, loginUser } from '../controllers/authController';
+import { verifyToken } from '../middlewares/authMiddleware';
+import prisma from '../config/prisma';
 
-const prisma = new PrismaClient();
 const router = Router();
 
-router.post('/register', async (req, res) => {
-  const { email, password } = req.body;
+router.post('/register', registerUser);
+router.post('/login', loginUser);
 
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email și parolă sunt obligatorii.' });
-  }
-
-  try {
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-
-    if (existingUser) {
-      return res.status(409).json({ message: 'Email deja folosit.' });
+router.get('/me', verifyToken, async (req: any, res) => {
+    try {
+      const userId = req.user.userId;
+  
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          email: true,
+          createdAt: true
+        }
+      });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'Utilizator inexistent.' });
+      }
+  
+      res.status(200).json({ user });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Eroare internă.' });
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-      },
-    });
-
-    return res.status(201).json({
-      message: 'Înregistrare reușită!',
-      userId: newUser.id,
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Eroare la server.' });
-  }
-});
+  });  
 
 export default router;
