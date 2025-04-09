@@ -9,6 +9,4 @@ app.use(express.json());
 app.use(cors());
 app.use('/api', authRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Serverul rulează pe http://localhost:${PORT}`);
-});
+app.listen(PORT);

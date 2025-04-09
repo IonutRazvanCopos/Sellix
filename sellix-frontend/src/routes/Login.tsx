@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import axios from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -15,6 +18,8 @@ const Login = () => {
       const res = await axios.post('/login', { email, password });
       const token = res.data.token;
       localStorage.setItem('token', token);
+
+      login();
       navigate('/auctions');
     } catch (err: any) {
       if (err.response) {

@@ -1,20 +1,8 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { isAuthenticated } from '../utils/auth';
-import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
-  const navigate = useNavigate();
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  useEffect(() => {
-    setLoggedIn(isAuthenticated());
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setLoggedIn(false);
-    navigate('/login');
-  };
+  const { isLoggedIn, logout } = useAuth();
 
   return (
     <nav className="bg-white shadow-md py-4 px-6 flex justify-between items-center">
@@ -23,13 +11,13 @@ const Navbar = () => {
       </Link>
 
       <div className="space-x-4">
-        {loggedIn ? (
+        {isLoggedIn ? (
           <>
             <Link to="/profile" className="text-gray-700 hover:text-blue-600 font-medium">
               Contul meu
             </Link>
             <button
-              onClick={handleLogout}
+              onClick={logout}
               className="bg-red-500 text-white px-4 py-1.5 rounded-full shadow hover:bg-red-600 transition"
             >
               Logout
@@ -37,7 +25,7 @@ const Navbar = () => {
           </>
         ) : (
           <>
-           <Link to="/licitatii" className="text-gray-700 hover:text-blue-600 font-medium">
+            <Link to="/licitatii" className="text-gray-700 hover:text-blue-600 font-medium">
               Licitatii
             </Link>
             <Link to="/register" className="text-gray-700 hover:text-blue-600 font-medium">
