@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { AuthRequest } from '../middlewares/authMiddleware';
 import bcrypt from 'bcrypt';
 import prisma from '../config/prisma';
 import jwt from 'jsonwebtoken';
@@ -67,5 +68,29 @@ export const loginUser = async (req: Request, res: Response) => {
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: 'Eroare internă.' });
+    }
+  };
+
+  export const getMe = async (req: AuthRequest, res: Response) => {
+    try {
+      const userId = req.user?.userId;
+  
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          email: true,
+          createdAt: true,
+        },
+      });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'Utilizator inexistent.' });
+      }
+  
+      res.status(200).json({ user });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Eroare internă.' });
     }
   };
