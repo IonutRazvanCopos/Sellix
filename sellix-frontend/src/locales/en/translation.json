@@ -1,0 +1,30 @@
+{
+    "navbar": {
+      "login": "Login",
+      "register": "Register",
+      "logout": "Logout",
+      "profile": "My Account",
+      "auctions": "Auctions"
+    },
+    "profile": {
+      "title": "My Profile",
+      "username": "Username",
+      "phone": "Phone Number",
+      "county": "County",
+      "city": "City",
+      "created": "Account Created On",
+      "save": "Save Changes",
+      "noListings": "You have no active listings yet."
+    },
+    "auth": {
+      "title": "Sellix",
+      "subtitleLogin": "Smart Bidding",
+      "subtitleRegister": "Register New Account",
+      "email": "Email",
+      "password": "Password",
+      "login": "Login",
+      "register": "Create Account",
+      "successRegister": "Successfully registered",
+      "errorUnknown": "Unknown error"
+    }
+  }

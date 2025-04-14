@@ -8,11 +8,11 @@ export interface AuthRequest extends Request {
   user?: { userId: number; email: string };
 }
 
-export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction) => {
+export function verifyToken(req: AuthRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Token lipsă sau invalid.' });
+    return res.status(401).json({ message: 'Missing or invalid token.' });
   }
 
   const token = authHeader.split(' ')[1];
@@ -26,6 +26,6 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({ message: 'Token invalid sau expirat.' });
+    return res.status(401).json({ message: 'Invalid or expired token.' });
   }
-};
+}

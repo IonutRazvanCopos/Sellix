@@ -6,14 +6,14 @@ interface Props {
   children: JSX.Element;
 }
 
-function PublicRoute({ children }: Props) {
+function userProfileRoute({ children }: Props) {
   const { isLoggedIn } = useAuth();
 
-  if (isLoggedIn) {
-    return <Navigate to="/auctions" />;
+  if (!isLoggedIn) {
+    return <Navigate to="/login" />;
   }
 
   return children;
-}
+};
 
-export default PublicRoute;
+export default userProfileRoute;

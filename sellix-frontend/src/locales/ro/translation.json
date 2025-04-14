@@ -1,0 +1,30 @@
+{
+    "navbar": {
+      "login": "Autentificare",
+      "register": "Înregistrare",
+      "logout": "Deconectare",
+      "profile": "Contul Meu",
+      "auctions": "Licitatii"
+    },
+    "profile": {
+      "title": "Profilul Meu",
+      "username": "Nume utilizator",
+      "phone": "Număr de telefon",
+      "county": "Județ",
+      "city": "Oraș",
+      "created": "Cont creat la",
+      "save": "Salvează Modificările",
+      "noListings": "Momentan nu ai niciun anunț activ."
+    },
+    "auth": {
+      "title": "Sellix",
+      "subtitleLogin": "Licitează inteligent",
+      "subtitleRegister": "Înregistrare cont nou",
+      "email": "Email",
+      "password": "Parolă",
+      "login": "Autentificare",
+      "register": "Creează cont",
+      "successRegister": "Înregistrare reușită",
+      "errorUnknown": "Eroare necunoscută"
+    }
+  }  
