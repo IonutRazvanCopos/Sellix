@@ -87,6 +87,11 @@ function getMe(req, res) {
                     id: true,
                     email: true,
                     createdAt: true,
+                    username: true,
+                    phone: true,
+                    city: true,
+                    county: true,
+                    avatar: true
                 },
             });
             if (!user) {

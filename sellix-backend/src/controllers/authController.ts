@@ -69,7 +69,7 @@ export async function loginUser(req: Request, res: Response) {
       console.error(error);
       return res.status(500).json({ message: 'Internal error.' });
     }
-  };
+  }
 
   export async function getMe(req: AuthRequest, res: Response) {
     try {
@@ -81,6 +81,11 @@ export async function loginUser(req: Request, res: Response) {
           id: true,
           email: true,
           createdAt: true,
+          username: true,
+          phone: true,
+          city: true,
+          county: true,
+          avatar: true
         },
       });
   
@@ -93,4 +98,48 @@ export async function loginUser(req: Request, res: Response) {
       console.error(error);
       res.status(500).json({ message: 'Internal error.' });
     }
-  };
+  }
+
+  export async function updateProfile(req: AuthRequest, res: Response) {
+    try {
+      const { username, phone, city, county } = req.body;
+      let avatarPath: string | undefined = undefined;
+
+      if (req.files && (req.files as any).avatar) {
+        const avatar = (req.files as any).avatar;
+        const fileName = `${Date.now()}_${avatar.name}`;
+        const uploadPath = `public/uploads/${fileName}`;
+        await avatar.mv(uploadPath);
+        avatarPath = `/uploads/${fileName}`;
+      }
+  
+      await prisma.user.update({
+        where: { id: req.user!.userId },
+        data: {
+          username,
+          phone,
+          city,
+          county,
+          ...(avatarPath && { avatar: avatarPath }),
+        },
+      });
+  
+      res.json({ message: 'Profile updated successfully' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Update failed' });
+    }
+  }
+  
+  export async function getMyListings(req: AuthRequest, res: Response) {
+    try {
+      const listings = await prisma.listing.findMany({
+        where: { userId: req.user!.userId },
+        orderBy: { createdAt: 'desc' },
+      });
+      res.json(listings);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Could not fetch listings' });
+    }
+  }

@@ -29,7 +29,7 @@ function Navbar() {
         <div className="space-x-4">
           {isLoggedIn ? (
             <>
-              <Link to="/profile" className="text-gray-700 hover:text-blue-600 font-medium">
+              <Link to={`/profile`} className="text-gray-700 hover:text-blue-600 font-medium">
                 {t('navbar.profile')}
               </Link>
               <button
@@ -59,13 +59,13 @@ function Navbar() {
 
         <div className="space-x-2">
           <button
-            onClick={function () { handleLanguageChange('ro'); }}
+            onClick={() => handleLanguageChange('ro')}
             className={getLangButtonStyle('ro')}
           >
             RO
           </button>
           <button
-            onClick={function () { handleLanguageChange('en'); }}
+            onClick={() => handleLanguageChange('en')}
             className={getLangButtonStyle('en')}
           >
             EN

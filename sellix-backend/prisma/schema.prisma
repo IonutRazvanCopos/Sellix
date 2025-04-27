@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -11,5 +12,20 @@ model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   password  String
+  username String?
+  phone String?
+  city String?
+  county String?
+  avatar    String?
   createdAt DateTime @default(now())
+  listings Listing[]
+}
+
+model Listing {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
 }

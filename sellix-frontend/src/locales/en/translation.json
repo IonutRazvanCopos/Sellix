@@ -12,7 +12,9 @@
       "phone": "Phone Number",
       "county": "County",
       "city": "City",
-      "created": "Account Created On",
+      "createdAt": "Account Created On",
+      "avatar": "Profile Picture",
+      "email": "Email",
       "save": "Save Changes",
       "noListings": "You have no active listings yet."
     },
