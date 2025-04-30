@@ -16,6 +16,7 @@
       "avatar": "Profile Picture",
       "email": "Email",
       "save": "Save Changes",
+      "cancel": "Cancel Changes",
       "noListings": "You have no active listings yet."
     },
     "auth": {

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import axios from '../api/axios';
+import axios from '../../api/axios';
 import { useTranslation } from 'react-i18next';
+import { fetchCounties, fetchCities } from '../../services/locationService';
+import { useAuth } from '../../context/AuthContext';
 
 interface Listing {
   id: number;
@@ -9,53 +11,9 @@ interface Listing {
   createdAt: string;
 }
 
-const countiesWithCities: Record<string, string[]> = {
-  "Alba": ["Alba Iulia", "Blaj", "Aiud"],
-  "Arad": ["Arad", "Ineu", "Lipova"],
-  "Arges": ["Pitesti", "Campulung", "Mioveni"],
-  "Bacau": ["Bacau", "Onesti", "Moinesti"],
-  "Bihor": ["Oradea", "Salonta", "Beius"],
-  "Bistrita-Nasaud": ["Bistrita", "Nasaud", "Beclean"],
-  "Botosani": ["Botosani", "Dorohoi"],
-  "Braila": ["Braila"],
-  "Brasov": ["Brasov", "Sacele", "Fagaras"],
-  "Bucuresti": ["Bucuresti"],
-  "Buzau": ["Buzau", "Ramnicu Sarat"],
-  "Caras-Severin": ["Resita", "Caransebes"],
-  "Calarasi": ["Calarasi", "Oltenita"],
-  "Cluj": ["Cluj-Napoca", "Turda", "Dej", "Gherla"],
-  "Constanta": ["Constanta", "Medgidia", "Mangalia"],
-  "Covasna": ["Sfantu Gheorghe", "Targu Secuiesc"],
-  "Dambovita": ["Targoviste", "Moreni"],
-  "Dolj": ["Craiova", "Calafat"],
-  "Galati": ["Galati", "Tecuci"],
-  "Giurgiu": ["Giurgiu"],
-  "Gorj": ["Targu Jiu", "Motru"],
-  "Harghita": ["Miercurea Ciuc", "Gheorgheni"],
-  "Hunedoara": ["Deva", "Hunedoara", "Petrosani"],
-  "Ialomita": ["Slobozia", "Fetesti"],
-  "Iasi": ["Iasi", "Pascani"],
-  "Ilfov": ["Buftea", "Voluntari"],
-  "Maramures": ["Baia Mare", "Sighetu Marmatiei"],
-  "Mehedinti": ["Drobeta-Turnu Severin"],
-  "Mures": ["Targu Mures", "Reghin", "Sighisoara"],
-  "Neamt": ["Piatra Neamt", "Roman"],
-  "Olt": ["Slatina", "Caracal"],
-  "Prahova": ["Ploiesti", "Campina"],
-  "Salaj": ["Zalau", "Simleu Silvaniei", "Jibou"],
-  "Satu Mare": ["Satu Mare", "Carei"],
-  "Sibiu": ["Sibiu", "Medias"],
-  "Suceava": ["Suceava", "Falticeni", "Radauti"],
-  "Teleorman": ["Alexandria", "Rosiorii de Vede"],
-  "Timis": ["Timisoara", "Lugoj"],
-  "Tulcea": ["Tulcea"],
-  "Valcea": ["Ramnicu Valcea", "Dragasani"],
-  "Vaslui": ["Vaslui", "Barlad"],
-  "Vrancea": ["Focsani", "Adjud"]
-};
-
 function Profile() {
   const { t } = useTranslation();
+  const { token } = useAuth();
   const [email, setEmail] = useState('');
   const [createdAt, setCreatedAt] = useState('');
   const [username, setUsername] = useState('');
@@ -66,41 +24,62 @@ function Profile() {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [listings, setListings] = useState<Listing[]>([]);
   const [error, setError] = useState('');
+  const [countiesWithCities, setCountiesWithCities] = useState<Record<string, string[]>>({});
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoadingCounties, setIsLoadingCounties] = useState(true);
+
+  async function fetchCountiesAndCities() {
+    try {
+      setIsLoadingCounties(true);
+      const states = await fetchCounties();
+      const formattedData: Record<string, string[]> = {};
+      for (const state of states) {
+        const cities = await fetchCities(state.iso2);
+        formattedData[state.name.replace(' County', '')] = cities.map((c: any) => c.name);
+      }
+      setCountiesWithCities(formattedData);
+      setIsLoadingCounties(false);
+    } catch (error) {
+      console.error('Error fetching counties and cities:', error);
+    }
+  }
+
+  async function fetchProfile() {
+    try {
+      if (!token) return;
+
+      const res = await axios.get('/profile', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const user = res.data.user;
+      setEmail(user.email);
+      setUsername(user.username || user.email.split('@')[0]);
+      setPhone(user.phone || '');
+      setCity(user.city || '');
+      setCounty(user.county || '');
+      setCreatedAt(new Date(user.createdAt).toLocaleDateString());
+      setAvatarUrl(user.avatar || '');
+
+      const listingsRes = await axios.get('/my-listings', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setListings(listingsRes.data);
+    } catch {
+      setError(t('profile.error'));
+    }
+  }
 
   useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        const res = await axios.get('/profile', {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        const user = res.data.user;
-        setEmail(user.email);
-        setUsername(user.username || user.email.split('@')[0]);
-        setPhone(user.phone || '');
-        setCity(user.city || '');
-        setCounty(user.county || '');
-        setCreatedAt(new Date(user.createdAt).toLocaleDateString());
-        setAvatarUrl(user.avatar || '');
-
-        const listingsRes = await axios.get('/my-listings', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setListings(listingsRes.data);
-      } catch {
-        setError(t('profile.error'));
-      }
+    async function fetchData() {
+      await fetchProfile();
+      await fetchCountiesAndCities();
     }
 
-    fetchProfile();
-  }, [t, isEditing]);
+    fetchData();
+  }, [t, isEditing, token]);
 
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files[0]) {
@@ -110,7 +89,8 @@ function Profile() {
 
   async function handleSave() {
     try {
-      const token = localStorage.getItem('token');
+      if (!token) return;
+
       const formData = new FormData();
       formData.append('username', username);
       formData.append('phone', phone);
@@ -152,18 +132,27 @@ function Profile() {
           <div>
             <label className="block text-sm text-gray-700 font-medium">{t('profile.avatar')}</label>
             {isEditing ? (
-              <input type="file" accept="image/*" onChange={handleAvatarChange} className="w-full mt-1" />
+              <div className="flex flex-col items-start">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              </div>
             ) : (
-              <div className="w-24 h-24 rounded-full overflow-hidden border mt-1">
-                {avatarUrl ? (
-                  <img
-                    src={`http://localhost:3000${avatarUrl}`}
-                    alt="Avatar"
-                    className="object-cover w-full h-full"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400">No Avatar</div>
-                )}
+              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300 mt-1 shadow-md">
+              {avatarUrl ? (
+                <img
+                src={`http://localhost:3000${avatarUrl}`}
+                alt="Avatar"
+                className="object-cover w-full h-full"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                {t('profile.noAvatar')}
+                </div>
+              )}
               </div>
             )}
           </div>
@@ -194,12 +183,16 @@ function Profile() {
           <div>
             <label className="text-sm text-gray-700 font-medium">{t('profile.county')}</label>
             {isEditing ? (
-              <select value={county} onChange={(e) => setCounty(e.target.value)} className="w-full px-4 py-2 border rounded-md mt-1">
+                <select value={county} onChange={(e) => setCounty(e.target.value)} className="w-full px-4 py-2 border rounded-md mt-1">
                 <option value="">{t('profile.county')}</option>
-                {Object.keys(countiesWithCities).map((judet) => (
-                  <option key={judet} value={judet}>{judet}</option>
-                ))}
-              </select>
+                {isLoadingCounties ? (
+                  <option value="" disabled>{t('loading')}...</option>
+                ) : (
+                  Object.keys(countiesWithCities).map((county) => (
+                    <option key={county} value={county}>{county}</option>
+                  ))
+                )}
+                </select>
             ) : (
               <p className="w-full px-4 py-2 border rounded-md bg-gray-100 mt-1">{county}</p>
             )}
@@ -210,8 +203,8 @@ function Profile() {
             {isEditing ? (
               <select value={city} onChange={(e) => setCity(e.target.value)} className="w-full px-4 py-2 border rounded-md mt-1" disabled={!county}>
                 <option value="">{t('profile.city')}</option>
-                {availableCities.map((oras) => (
-                  <option key={oras} value={oras}>{oras}</option>
+                {availableCities.map((city) => (
+                  <option key={city} value={city}>{city}</option>
                 ))}
               </select>
             ) : (
@@ -231,6 +224,15 @@ function Profile() {
             className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition mb-6"
           >
             {t('profile.save')}
+          </button>
+        )}
+
+        {isEditing && (
+          <button
+            onClick={handleSave}
+            className="w-full bg-gray-400 text-white py-2 rounded-md hover:bg-gray-700 transition mb-6"
+          >
+            {t('profile.cancel')}
           </button>
         )}
 

@@ -1,39 +1,31 @@
 import { useState } from 'react';
-import axios from '../api/axios';
+import axios from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 
-function Login() {
+function Register() {
   const navigate = useNavigate();
-  const { login } = useAuth();
   const { t } = useTranslation();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
-  function handleLogin(e: React.FormEvent) {
+  async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
-    setError('');
-
-    async function performLogin() {
-      try {
-        const res = await axios.post('/login', { email, password });
-        const token = res.data.token;
-        localStorage.setItem('token', token);
-        login();
-        navigate('/auctions');
-      } catch (err: any) {
-        if (err.response) {
-          setError(err.response.data.message);
-        } else {
-          setError(t('auth.errorUnknown'));
-        }
+    try {
+      const res = await axios.post('/register', { email, password });
+      setMessage(res.data.message);
+      setTimeout(function () {
+        navigate('/login');
+      }, 2000);
+    } catch (err: any) {
+      if (err.response) {
+        setMessage(err.response.data.message);
+      } else {
+        setMessage(t('auth.errorUnknown'));
       }
     }
-
-    performLogin();
   }
 
   return (
@@ -41,10 +33,10 @@ function Login() {
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
         <div className="mb-6 text-center">
           <div className="text-blue-600 text-5xl font-extrabold tracking-wide">{t('auth.title')}</div>
-          <div className="text-gray-500 italic text-sm">{t('auth.subtitleLogin')}</div>
+          <div className="text-gray-500 italic text-sm">{t('auth.subtitleRegister')}</div>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-5">
+        <form onSubmit={handleRegister} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.email')}</label>
             <input
@@ -71,16 +63,16 @@ function Login() {
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200 font-semibold"
           >
-            {t('auth.login')}
+            {t('auth.register')}
           </button>
         </form>
 
-        {error && (
-          <p className="mt-4 text-center text-sm text-red-500">{error}</p>
+        {message && (
+          <p className="mt-4 text-center text-sm text-gray-700">{message}</p>
         )}
       </div>
     </div>
   );
 }
 
-export default Login;
+export default Register;
