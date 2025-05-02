@@ -5,9 +5,36 @@ import Profile from './routes/user/Profile';
 import Navbar from './components/Navbar';
 import PublicRoute from './utils/PublicRoute';
 import { useAuth } from './context/AuthContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useEffect } from 'react';
 
 function App() {
   const { isLoggedIn } = useAuth();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      toast.success('Login successfully!', {
+        position: 'top-right',
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } else {
+      toast.error('You are not logged in!', {
+        position: 'top-right',
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }, [isLoggedIn]);
 
   return (
     <>
@@ -40,6 +67,7 @@ function App() {
           element={<Profile />}
         />
       </Routes>
+      <ToastContainer />
     </>
   );
 }

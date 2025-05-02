@@ -18,7 +18,7 @@ function Login() {
 
     async function performLogin() {
       try {
-        const res = await axios.post('/login', { email, password });
+        const res = await axios.post('/user/login', { email, password });
         login(res.data.token);
         navigate('/auctions');
       } catch (err: any) {

@@ -48,7 +48,7 @@ function Profile() {
     try {
       if (!token) return;
 
-      const res = await axios.get('/profile', {
+      const res = await axios.get('/user/profile', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -100,7 +100,7 @@ function Profile() {
         formData.append('avatar', avatar);
       }
 
-      await axios.put('/update-profile', formData, {
+      await axios.put('/update', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',

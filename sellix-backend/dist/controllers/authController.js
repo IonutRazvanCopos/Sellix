@@ -8,18 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerUser = registerUser;
 exports.loginUser = loginUser;
 exports.getMe = getMe;
-const bcrypt_1 = __importDefault(require("bcrypt"));
-const prisma_1 = __importDefault(require("../config/prisma"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+exports.updateProfile = updateProfile;
+exports.getMyListings = getMyListings;
+const authHelpers_1 = require("../helpers/authHelpers");
 function registerUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -27,17 +22,11 @@ function registerUser(req, res) {
             if (!email || !password) {
                 return res.status(400).json({ message: 'Email and password are required.' });
             }
-            const existingUser = yield prisma_1.default.user.findUnique({ where: { email } });
+            const existingUser = yield (0, authHelpers_1.findUserByEmail)(email);
             if (existingUser) {
                 return res.status(409).json({ message: 'Email already used.' });
             }
-            const hashedPassword = yield bcrypt_1.default.hash(password, 10);
-            const newUser = yield prisma_1.default.user.create({
-                data: {
-                    email,
-                    password: hashedPassword,
-                },
-            });
+            const newUser = yield (0, authHelpers_1.createUser)(email, password);
             return res.status(201).json({
                 message: 'User successfully registered!',
                 userId: newUser.id,
@@ -56,17 +45,13 @@ function loginUser(req, res) {
             return res.status(400).json({ message: 'Email and password are required.' });
         }
         try {
-            const user = yield prisma_1.default.user.findUnique({ where: { email } });
-            if (!user) {
+            const user = yield (0, authHelpers_1.findUserByEmail)(email);
+            if (!user)
                 return res.status(404).json({ message: 'User does not exist.' });
-            }
-            const isPasswordValid = yield bcrypt_1.default.compare(password, user.password);
-            if (!isPasswordValid) {
+            const isPasswordValid = yield (0, authHelpers_1.comparePasswords)(password, user.password);
+            if (!isPasswordValid)
                 return res.status(401).json({ message: 'Incorrect password.' });
-            }
-            const token = jsonwebtoken_1.default.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, {
-                expiresIn: '1h',
-            });
+            const token = (0, authHelpers_1.generateToken)(user.id, user.email);
             return res.status(200).json({ message: 'Authentication successful!', token });
         }
         catch (error) {
@@ -75,25 +60,10 @@ function loginUser(req, res) {
         }
     });
 }
-;
 function getMe(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a;
         try {
-            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
-            const user = yield prisma_1.default.user.findUnique({
-                where: { id: userId },
-                select: {
-                    id: true,
-                    email: true,
-                    createdAt: true,
-                    username: true,
-                    phone: true,
-                    city: true,
-                    county: true,
-                    avatar: true
-                },
-            });
+            const user = yield (0, authHelpers_1.getUserProfile)(req.user.userId);
             if (!user) {
                 return res.status(404).json({ message: 'User does not exist.' });
             }
@@ -105,4 +75,39 @@ function getMe(req, res) {
         }
     });
 }
-;
+function updateProfile(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { username, phone, city, county } = req.body;
+            let avatarPath;
+            if (req.files && req.files.avatar) {
+                const avatar = req.files.avatar;
+                const fileName = `${Date.now()}_${avatar.name}`;
+                const uploadPath = `public/uploads/${fileName}`;
+                yield avatar.mv(uploadPath);
+                avatarPath = `/uploads/${fileName}`;
+            }
+            const updatedUser = yield (0, authHelpers_1.updateUserProfile)(req.user.userId, Object.assign({ username,
+                phone,
+                city,
+                county }, (avatarPath && { avatar: avatarPath })));
+            res.json({ message: 'Profile updated successfully', updatedUser });
+        }
+        catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Update failed' });
+        }
+    });
+}
+function getMyListings(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const listings = yield (0, authHelpers_1.getUserListings)(req.user.userId);
+            res.json(listings);
+        }
+        catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Could not fetch listings' });
+        }
+    });
+}
