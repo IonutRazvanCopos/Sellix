@@ -66,7 +66,7 @@ function Navbar() {
                   {t('navbar.profile')}
                 </Link>
                 <Link to="/my-auctions" className="block px-4 py-2 hover:bg-gray-100">
-                  {t('navbar.myAuctions')}
+                  My Auctions
                 </Link>
                 <button
                   onClick={logout}
@@ -80,7 +80,7 @@ function Navbar() {
         ) : (
           <>
             <Link to="/auctions" className={getNavLinkClass('/auctions')}>
-              {t('navbar.auctions')}
+              My Auctions
             </Link>
             <Link to="/register" className={getNavLinkClass('/register')}>
               {t('navbar.register')}
@@ -108,7 +108,7 @@ function Navbar() {
                 {t('navbar.username')}
               </Link>
               <Link to="/my-auctions" className="w-full py-2" onClick={() => setIsMobileMenuOpen(false)}>
-                {t('navbar.myAuctions')}
+                My Auctions
               </Link>
               <button onClick={logout} className="text-red-600 py-2">
                 {t('navbar.logout')}
