@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { registerUser, loginUser, getMe, updateProfile } from '../../controllers/authController';
+import { register, login, getMe, updateProfile } from '../../controllers/userController';
 import { verifyToken } from '../../middlewares/authMiddleware';
 
 const router = Router();
 
-router.post('/user/register', registerUser);
-router.post('/user/login', loginUser);
+router.post('/user/register', register);
+router.post('/user/login', login);
 router.get('/user/profile', verifyToken, getMe);
 router.put('/update', verifyToken, updateProfile);
 

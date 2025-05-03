@@ -17,7 +17,7 @@ exports.createUser = createUser;
 exports.generateToken = generateToken;
 exports.comparePasswords = comparePasswords;
 exports.getUserProfile = getUserProfile;
-exports.updateUserProfile = updateUserProfile;
+exports.updateProfile = updateProfile;
 exports.getUserListings = getUserListings;
 const prisma_1 = __importDefault(require("../config/prisma"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -65,7 +65,7 @@ function getUserProfile(userId) {
         });
     });
 }
-function updateUserProfile(userId, data) {
+function updateProfile(userId, data) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield prisma_1.default.user.update({
             where: { id: userId },

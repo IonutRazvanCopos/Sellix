@@ -6,11 +6,11 @@ import {
   comparePasswords,
   generateToken,
   getUserProfile,
-  updateUserProfile,
+  updateProfile as updateUserProfile,
   getUserListings
 } from '../helpers/authHelpers';
 
-export async function registerUser(req: Request, res: Response) {
+export async function register(req: Request, res: Response) {
   try {
     const { email, password } = req.body;
 
@@ -35,7 +35,7 @@ export async function registerUser(req: Request, res: Response) {
   }
 }
 
-export async function loginUser(req: Request, res: Response) {
+export async function login(req: Request, res: Response) {
   const { email, password } = req.body;
 
   if (!email || !password) {

@@ -42,7 +42,7 @@ export async function getUserProfile(userId: number) {
   });
 }
 
-export async function updateUserProfile(userId: number, data: any) {
+export async function updateProfile(userId: number, data: any) {
   return await prisma.user.update({
     where: { id: userId },
     data,
