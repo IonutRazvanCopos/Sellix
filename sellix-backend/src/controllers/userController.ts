@@ -98,7 +98,7 @@ export async function updateProfile(req: AuthRequest, res: Response) {
   }
 }
 
-export async function getMyListings(req: AuthRequest, res: Response) {
+export async function getUserListingsById(req: AuthRequest, res: Response) {
   try {
     const listings = await getUserListings(req.user!.userId);
     res.json(listings);

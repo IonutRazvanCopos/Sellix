@@ -8,7 +8,6 @@ function Navbar() {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const currentLang = i18n.language;
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [username, setUsername] = useState('');
@@ -58,7 +57,7 @@ function Navbar() {
               onClick={() => setShowDropdown(!showDropdown)}
               className="text-gray-700 hover:text-blue-600 font-medium"
             >
-              {username || 'My Account'} ⌄
+              Me ⌄
             </button>
             {showDropdown && (
               <div className="absolute right-0 mt-2 bg-white shadow rounded-md z-10">

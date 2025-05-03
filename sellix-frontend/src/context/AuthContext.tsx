@@ -2,11 +2,14 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
+
 interface AuthContextType {
   isLoggedIn: boolean;
   token: string | null;
   login: (token: string) => void;
   logout: () => void;
+  justLoggedIn: boolean;
+  setJustLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -14,11 +17,14 @@ const AuthContext = createContext<AuthContextType>({
   token: null,
   login: () => {},
   logout: () => {},
+  justLoggedIn: false,
+  setJustLoggedIn: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [justLoggedIn, setJustLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
@@ -30,18 +36,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = (token: string) => {
     localStorage.setItem('token', token);
+    localStorage.getItem('username');
     setToken(token);
     setIsLoggedIn(true);
+    setJustLoggedIn(true);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('loginToastShown');
+    localStorage.removeItem('username');
     setToken(null);
     setIsLoggedIn(false);
+    setJustLoggedIn(false);
+
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, token, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, token, login, logout, justLoggedIn, setJustLoggedIn }}>
       {children}
     </AuthContext.Provider>
   );

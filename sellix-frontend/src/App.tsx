@@ -7,15 +7,15 @@ import PublicRoute from './utils/PublicRoute';
 import { useAuth } from './context/AuthContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 function App() {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, justLoggedIn, setJustLoggedIn } = useAuth();
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn && justLoggedIn) {
       toast.success('Login successfully!', {
-        position: 'top-right',
+        position: 'bottom-right',
         autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -23,18 +23,12 @@ function App() {
         draggable: true,
         progress: undefined,
       });
-    } else {
-      toast.error('You are not logged in!', {
-        position: 'top-right',
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      setJustLoggedIn(false);
+      localStorage.setItem('loginToastShown', 'true');
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, justLoggedIn]);
+  
+
 
   return (
     <>

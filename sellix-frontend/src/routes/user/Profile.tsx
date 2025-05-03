@@ -63,7 +63,7 @@ function Profile() {
       setCreatedAt(new Date(user.createdAt).toLocaleDateString());
       setAvatarUrl(user.avatar || '');
 
-      const listingsRes = await axios.get('/my-listings', {
+      const listingsRes = await axios.get('/listing/userId', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setListings(listingsRes.data);

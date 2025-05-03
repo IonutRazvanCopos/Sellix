@@ -13,7 +13,7 @@ exports.register = register;
 exports.login = login;
 exports.getMe = getMe;
 exports.updateProfile = updateProfile;
-exports.getMyListings = getMyListings;
+exports.getUserListingsById = getUserListingsById;
 const authHelpers_1 = require("../helpers/authHelpers");
 function register(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -99,7 +99,7 @@ function updateProfile(req, res) {
         }
     });
 }
-function getMyListings(req, res) {
+function getUserListingsById(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const listings = yield (0, authHelpers_1.getUserListings)(req.user.userId);
