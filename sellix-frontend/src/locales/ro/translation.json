@@ -63,7 +63,8 @@
       "deleteConfirmation": "Sigur doriți să ștergeți acest anunț?",
       "deleteSuccess": "Anunț șters cu succes.",
       "deleteError": "Eroare la ștergerea anunțului.",
-      "postedBy": "Postat de:"
+      "postedBy": "Postat de:",
+      "viewDetails": "Vezi Detalii"
     },
     "footer": {
       "rights": "Toate drepturile rezervate.",

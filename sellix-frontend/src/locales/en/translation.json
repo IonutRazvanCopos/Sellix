@@ -62,7 +62,8 @@
       "deleteConfirmation": "Are you sure you want to delete this listing?",
       "deleteSuccess": "Listing deleted successfully.",
       "deleteError": "Error deleting listing.",
-      "postedBy": "Posted by:"
+      "postedBy": "Posted by:",
+      "viewDetails": "View Details"
     },
     "footer": {
       "rights": "All rights reserved.",

@@ -48,9 +48,10 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   try {
     const formData = new FormData();
+    const numericPrice = price.replace(/\./g, '');
     formData.append('title', title);
     formData.append('description', description);
-    formData.append('price', price);
+    formData.append('price', numericPrice);
     formData.append('currency', currency);
     formData.append('type', type);
     formData.append('categoryId', categoryId);

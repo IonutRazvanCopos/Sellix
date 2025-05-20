@@ -4,6 +4,8 @@ import axios from '../../api/axios';
 import { useTranslation } from 'react-i18next';
 
 interface Listing {
+  price: any;
+  currency: 'RON' | 'EUR';
   id: number;
   title: string;
   description: string;
@@ -33,40 +35,64 @@ function Home() {
   }, []);
 
   return (
-    <div className="px-4 py-8 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-center">{t("home.welcome")}</h1>
+    <div className="px-4 py-10 max-w-7xl mx-auto">
+      <h1 className="text-4xl font-extrabold mb-10 text-center text-gradient bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+      {t("home.welcome")}
+      </h1>
 
       {listings.length === 0 ? (
-        <p className="text-gray-600 text-center">No listings available.</p>
+      <div className="flex flex-col items-center justify-center h-64">
+        <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        <p className="text-gray-500 text-lg">{t("listings.noListings") || "No listings available."}</p>
+      </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {listings.map((listing) => (
-            <div key={listing.id} className="bg-white p-4 shadow-md rounded-lg">
-
-              {listing.images && listing.images.length > 0 && (
-                <img
-                  src={`http://localhost:3000${listing.images[0].url}`}
-                  alt="Listing"
-                  className="w-full h-48 object-cover rounded-md mb-3"
-                />
-              )}
-
-              <h2 className="text-xl font-semibold">{listing.title}</h2>
-              <p className="text-gray-700 text-sm mt-2 line-clamp-3">{listing.description}</p>
-
-              <div className="mt-4 text-sm text-gray-500">
-                {t("listings.postedBy")} {listing.user?.username || 'Anonymous'}
-              </div>
-
-              <Link
-                to={`/listing/${listing.id}`}
-                className="inline-block mt-4 text-blue-600 hover:underline text-sm"
-              >
-                View details
-              </Link>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        {listings.map((listing) => (
+        <div
+          key={listing.id}
+          className="bg-white/80 backdrop-blur-md border border-gray-200 shadow-xl rounded-2xl overflow-hidden hover:scale-[1.025] transition-transform duration-200 flex flex-col"
+        >
+          <div className="relative">
+          {listing.images && listing.images.length > 0 ? (
+            <img
+            src={`http://localhost:3000${listing.images[0].url}`}
+            alt={listing.title}
+            className="w-full h-56 object-cover"
+            />
+          ) : (
+            <div className="w-full h-56 bg-gradient-to-br from-gray-100 to-gray-300 flex items-center justify-center text-gray-400 text-4xl">
+            <span>📦</span>
             </div>
-          ))}
+          )}
+          <span className="absolute top-3 right-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+            {listing.price
+              ? `${Number(listing.price).toLocaleString('ro-RO')} ${listing.currency === 'RON' ? 'RON' : '€'}`
+              : t("listings.noPrice")}
+          </span>
+          </div>
+          <div className="flex-1 flex flex-col p-5">
+          <h2 className="text-2xl font-bold mb-2 text-gray-900">{listing.title}</h2>
+          <p className="text-gray-700 text-base mb-4 line-clamp-3">{listing.description}</p>
+          <div className="flex items-center gap-2 mt-auto text-sm text-gray-500">
+            <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm0 2c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z" />
+            </svg>
+            {t("listings.postedBy")} {listing.user?.username || 'Anonymous'}
+            <span className="mx-2">•</span>
+            <span className="text-xs">{new Date(listing.createdAt).toLocaleDateString()}</span>
+          </div>
+          <Link
+            to={`/listing/${listing.id}`}
+            className="mt-5 inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg font-semibold text-center shadow hover:from-blue-600 hover:to-purple-600 transition-colors"
+          >
+            {t("listings.viewDetails") || "View details"}
+          </Link>
+          </div>
         </div>
+        ))}
+      </div>
       )}
     </div>
   );
