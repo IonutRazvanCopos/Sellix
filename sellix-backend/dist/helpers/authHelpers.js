@@ -40,7 +40,7 @@ function createUser(email, password) {
 }
 function generateToken(userId, email) {
     return jsonwebtoken_1.default.sign({ userId, email }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
+        expiresIn: '8h',
     });
 }
 function comparePasswords(plain, hash) {

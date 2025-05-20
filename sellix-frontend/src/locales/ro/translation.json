@@ -4,7 +4,14 @@
       "register": "Înregistrare",
       "logout": "Deconectare",
       "profile": "Contul Meu",
-      "auctions": "Licitatii"
+      "home": "Acasă"
+    },
+    "home": {
+      "welcome": "Bine ai venit pe Sellix",
+      "searchPlaceholder": "Caută produse sau servicii",
+      "featuredListings": "Anunțuri Recomandate",
+      "viewAll": "Vezi Tot",
+      "noResults": "Nu au fost găsite rezultate."
     },
     "profile": {
       "title": "Profilul Meu",
@@ -31,5 +38,35 @@
       "register": "Creează cont",
       "successRegister": "Înregistrare reușită",
       "errorUnknown": "Eroare necunoscută"
+    },
+    "categories": {
+      "Electronics": "Electronice",
+      "Books": "Cărți",
+      "Real Estate": "Imobiliare",
+      "Clothing": "Îmbrăcăminte",
+      "Vehicles": "Vehicule",
+      "Services": "Servicii"
+    },
+    "listings": {
+      "categories": "Selectează categoria",
+      "title": "Titlu",
+      "addListing": "Adaugă Anunț",
+      "description": "Descriere",
+      "addImage": "Apasă pentru a selecta imagini",
+      "Price": "Preț",
+      "Sell": "Vinde",
+      "Auction": "Licitează",
+      "createListing": "Creează anunț",
+      "addListingSubtitle": "Adaugă un nou produs sau serviciu în magazinul tău",
+      "noListings": "Nu există anunțuri disponibile.",
+      "errorLoading": "Eroare la încărcarea anunțurilor.",
+      "deleteConfirmation": "Sigur doriți să ștergeți acest anunț?",
+      "deleteSuccess": "Anunț șters cu succes.",
+      "deleteError": "Eroare la ștergerea anunțului.",
+      "postedBy": "Postat de:"
+    },
+    "footer": {
+      "rights": "Toate drepturile rezervate.",
+      "createdBy": "Creat de"
     }
   }  

@@ -1,9 +1,96 @@
-import { Router } from 'express';
-import { getMyListings } from '../../controllers/listingController';
-import { verifyToken } from '../../middlewares/authMiddleware';
+import express from 'express';
+import { PrismaClient } from '@prisma/client';
+import { AuthRequest, verifyToken } from '../../middlewares/authMiddleware';
 
-const router = Router();
+const router = express.Router();
+const prisma = new PrismaClient();
 
-router.get('/listing/userId', verifyToken, getMyListings);
+router.get('/', async (req, res) => {
+  try {
+    const listings = await prisma.listing.findMany({
+      include: {
+        user: {
+          select: { username: true },
+        },
+        category: {
+          select: { name: true },
+        },
+        images: true,
+      },
+      orderBy: { createdAt: 'desc' },
+});
+
+
+    res.json(listings);
+  } catch (error) {
+    console.error('Error fetching listings:', error);
+    res.status(500).json({ message: 'Something went wrong' });
+  }
+});
+
+
+router.get('/profile', verifyToken, async (req: AuthRequest, res) => {
+  try {
+    const listings = await prisma.listing.findMany({
+      where: {
+        userId: req.user!.userId,
+      },
+      include: {
+        category: { select: { name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    res.json(listings);
+  } catch (error) {
+    console.error('Error fetching user listings:', error);
+    res.status(500).json({ message: 'Something went wrong.' });
+  }
+});
+
+router.post('/', verifyToken, async (req: AuthRequest, res) => {
+  const { title, description, price, currency, type, categoryId } = req.body;
+  const files = req.files?.images;
+
+  if (!title || !description || !price || !currency || !type || !categoryId) {
+    return res.status(400).json({ message: 'All fields are required.' });
+  }
+
+  try {
+    const newListing = await prisma.listing.create({
+      data: {
+        title,
+        description,
+        price: Number(price),
+        currency,
+        type,
+        categoryId: Number(categoryId),
+        userId: req.user!.userId,
+      },
+    });
+
+    if (files) {
+      const imagesArray = Array.isArray(files) ? files : [files];
+
+      for (const img of imagesArray) {
+        const filename = `${Date.now()}_${img.name}`;
+        const path = `public/uploads/${filename}`;
+        await img.mv(path);
+
+        await prisma.image.create({
+          data: {
+            url: `/uploads/${filename}`,
+            listingId: newListing.id,
+          },
+        });
+      }
+    }
+
+    res.status(201).json({ message: 'Listing created', listingId: newListing.id });
+  } catch (error) {
+    console.error('Error creating listing:', error);
+    res.status(500).json({ message: 'Failed to create listing.' });
+  }
+});
 
 export default router;

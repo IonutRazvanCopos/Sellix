@@ -63,7 +63,7 @@ function Profile() {
       setCreatedAt(new Date(user.createdAt).toLocaleDateString());
       setAvatarUrl(user.avatar || '');
 
-      const listingsRes = await axios.get('/listing/userId', {
+      const listingsRes = await axios.get('/listings/profile', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setListings(listingsRes.data);
@@ -150,7 +150,7 @@ function Profile() {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-                {t('profile.noAvatar')}
+                Avatar
                 </div>
               )}
               </div>

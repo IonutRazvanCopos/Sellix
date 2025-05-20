@@ -22,10 +22,39 @@ model User {
 }
 
 model Listing {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   title       String
   description String
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id])
+  price       Float
+  currency    Currency
+  type        ListingType
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id])
   userId      Int
+  category    Category  @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  images Image[]
+}
+
+model Image {
+  id        Int     @id @default(autoincrement())
+  url       String
+  listing   Listing @relation(fields: [listingId], references: [id])
+  listingId Int
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  listings  Listing[]
+}
+
+enum Currency {
+  RON
+  EUR
+}
+
+enum ListingType {
+  SELL
+  BID
 }

@@ -20,7 +20,7 @@ function Login() {
       try {
         const res = await axios.post('/user/login', { email, password });
         login(res.data.token);
-        navigate('/auctions');
+        navigate('/');
       } catch (err: any) {
         if (err.response) {
           setError(err.response.data.message);

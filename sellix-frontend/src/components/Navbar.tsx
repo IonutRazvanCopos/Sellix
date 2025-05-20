@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
+import { Plus, User, LogOut, List, PlusCircle } from 'lucide-react';
 
 function Navbar() {
   const { isLoggedIn, logout } = useAuth();
@@ -43,34 +44,60 @@ function Navbar() {
         Sellix
       </Link>
 
-      <button
-        className="md:hidden text-2xl"
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-      >
-        ☰
-      </button>
+      <div className="absolute left-1/2 transform -translate-x-1/2 mt-18">
+        <Link
+          to="/add-listing"
+          className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white w-12 h-12 flex items-center justify-center rounded-full shadow-lg hover:scale-110 transition duration-200"
+          title="Add Listing"
+        >
+          <Plus className="w-6 h-6" />
+        </Link>
+      </div>
 
       <div className="hidden md:flex items-center space-x-4">
+        <Link to="/" className={getNavLinkClass('/')}>
+          {t('navbar.home')}
+        </Link>
+
         {isLoggedIn ? (
           <div className="relative">
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="text-gray-700 hover:text-blue-600 font-medium"
+              className="flex items-center space-x-2 text-gray-700 hover:text-blue-600"
             >
-              Me ⌄
+              <User className="w-5 h-5" />
+              <span className="font-medium">{username || 'Me'}</span>
+              <span className="text-sm text-gray-400">▼</span>
             </button>
+
             {showDropdown && (
-              <div className="absolute right-0 mt-2 bg-white shadow rounded-md z-10">
-                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">
+              <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg w-48 z-50 overflow-hidden border border-gray-100">
+                <Link
+                  to="/profile"
+                  className="flex items-center px-4 py-2 hover:bg-gray-100 text-sm gap-2"
+                >
+                  <User className="w-4 h-4" />
                   {t('navbar.profile')}
                 </Link>
-                <Link to="/my-auctions" className="block px-4 py-2 hover:bg-gray-100">
-                  My Auctions
+                <Link
+                  to="/my-auctions"
+                  className="flex items-center px-4 py-2 hover:bg-gray-100 text-sm gap-2"
+                >
+                  <List className="w-4 h-4" />
+                  {t("profile.myListings")}
+                </Link>
+                <Link
+                  to="/add-listing"
+                  className="flex items-center px-4 py-2 hover:bg-gray-100 text-sm gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  {t('listings.addListing')}
                 </Link>
                 <button
                   onClick={logout}
-                  className="block w-full text-left text-red-600 px-4 py-2 hover:bg-gray-100"
+                  className="w-full text-left text-red-600 flex items-center px-4 py-2 hover:bg-gray-100 text-sm gap-2"
                 >
+                  <LogOut className="w-4 h-4" />
                   {t('navbar.logout')}
                 </button>
               </div>
@@ -78,9 +105,6 @@ function Navbar() {
           </div>
         ) : (
           <>
-            <Link to="/auctions" className={getNavLinkClass('/auctions')}>
-              My Auctions
-            </Link>
             <Link to="/register" className={getNavLinkClass('/register')}>
               {t('navbar.register')}
             </Link>
@@ -89,7 +113,9 @@ function Navbar() {
             </Link>
           </>
         )}
-        <div className="space-x-2">
+
+        {/* LANG BUTTONS */}
+        <div className="space-x-1">
           <button onClick={() => handleLanguageChange('ro')} className={getLangButtonStyle('ro')}>
             RO
           </button>
@@ -98,36 +124,6 @@ function Navbar() {
           </button>
         </div>
       </div>
-
-      {isMobileMenuOpen && (
-        <div className="absolute top-16 left-0 w-full bg-white shadow-md flex flex-col items-start px-6 py-4 space-y-2 md:hidden z-50">
-          {isLoggedIn ? (
-            <>
-              <Link to="/profile" className="w-full py-2" onClick={() => setIsMobileMenuOpen(false)}>
-                {t('navbar.username')}
-              </Link>
-              <Link to="/my-auctions" className="w-full py-2" onClick={() => setIsMobileMenuOpen(false)}>
-                My Auctions
-              </Link>
-              <button onClick={logout} className="text-red-600 py-2">
-                {t('navbar.logout')}
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/auctions" className="w-full py-2" onClick={() => setIsMobileMenuOpen(false)}>
-                {t('navbar.auctions')}
-              </Link>
-              <Link to="/register" className="w-full py-2" onClick={() => setIsMobileMenuOpen(false)}>
-                {t('navbar.register')}
-              </Link>
-              <Link to="/login" className="w-full py-2" onClick={() => setIsMobileMenuOpen(false)}>
-                {t('navbar.login')}
-              </Link>
-            </>
-          )}
-        </div>
-      )}
     </nav>
   );
 }

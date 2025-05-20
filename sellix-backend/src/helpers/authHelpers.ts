@@ -18,7 +18,7 @@ export async function createUser(email: string, password: string) {
 
 export function generateToken(userId: number, email: string) {
   return jwt.sign({ userId, email }, process.env.JWT_SECRET!, {
-    expiresIn: '1h',
+    expiresIn: '8h',
   });
 }
 
