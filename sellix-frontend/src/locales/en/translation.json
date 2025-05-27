@@ -25,7 +25,8 @@
       "save": "Save Changes",
       "cancel": "Cancel Changes",
       "noListings": "You have no active listings yet.",
-      "myListings": "My Listings"
+      "myListings": "My Listings",
+      "listings": "Listings"
     },
     "auth": {
       "title": "Sellix",

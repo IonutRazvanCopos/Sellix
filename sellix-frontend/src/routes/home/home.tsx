@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from '../../api/axios';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 interface Listing {
   price: any;
@@ -11,7 +12,8 @@ interface Listing {
   description: string;
   createdAt: string;
   user: {
-    username: string | null;
+    username: string;
+    id: number;
   };
   images?: {
     url: string;
@@ -21,6 +23,7 @@ interface Listing {
 function Home() {
   const [listings, setListings] = useState<Listing[]>([]);
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -50,47 +53,55 @@ function Home() {
       ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {listings.map((listing) => (
-        <div
-          key={listing.id}
-          className="bg-white/80 backdrop-blur-md border border-gray-200 shadow-xl rounded-2xl overflow-hidden hover:scale-[1.025] transition-transform duration-200 flex flex-col"
-        >
-          <div className="relative">
+          <Link
+        key={listing.id}
+        to={`/listing/${listing.id}`}
+        className="bg-white/80 backdrop-blur-md border border-gray-200 shadow-xl rounded-2xl overflow-hidden hover:scale-[1.025] transition-transform duration-200 flex flex-col cursor-pointer"
+          >
+        <div className="relative">
           {listing.images && listing.images.length > 0 ? (
             <img
-            src={`http://localhost:3000${listing.images[0].url}`}
-            alt={listing.title}
-            className="w-full h-56 object-cover"
+          src={`http://localhost:3000${listing.images[0].url}`}
+          alt={listing.title}
+          className="w-full h-56 object-cover"
             />
           ) : (
             <div className="w-full h-56 bg-gradient-to-br from-gray-100 to-gray-300 flex items-center justify-center text-gray-400 text-4xl">
-            <span>📦</span>
+          <span>📦</span>
             </div>
           )}
           <span className="absolute top-3 right-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
             {listing.price
-              ? `${Number(listing.price).toLocaleString('ro-RO')} ${listing.currency === 'RON' ? 'RON' : '€'}`
-              : t("listings.noPrice")}
+          ? `${Number(listing.price).toLocaleString('ro-RO')} ${listing.currency === 'RON' ? 'RON' : '€'}`
+          : t("listings.noPrice")}
           </span>
-          </div>
-          <div className="flex-1 flex flex-col p-5">
+        </div>
+        <div className="flex-1 flex flex-col p-5">
           <h2 className="text-2xl font-bold mb-2 text-gray-900">{listing.title}</h2>
           <p className="text-gray-700 text-base mb-4 line-clamp-3">{listing.description}</p>
           <div className="flex items-center gap-2 mt-auto text-sm text-gray-500">
             <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm0 2c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z" />
+          <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm0 2c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z" />
             </svg>
-            {t("listings.postedBy")} {listing.user?.username || 'Anonymous'}
+            {t("listings.postedBy")}{' '}
+            {listing.user?.username ? (
+                <span
+                  className="text-blue-600 hover:underline cursor-pointer"
+                  onClick={e => {
+                    e.stopPropagation();
+                    navigate(`/user/${listing.user.id}`);
+                  }}
+                >
+                  {listing.user.username}
+                </span>
+            ) : (
+              'Anonymous'
+            )}
             <span className="mx-2">•</span>
             <span className="text-xs">{new Date(listing.createdAt).toLocaleDateString()}</span>
           </div>
-          <Link
-            to={`/listing/${listing.id}`}
-            className="mt-5 inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg font-semibold text-center shadow hover:from-blue-600 hover:to-purple-600 transition-colors"
-          >
-            {t("listings.viewDetails") || "View details"}
-          </Link>
-          </div>
         </div>
+          </Link>
         ))}
       </div>
       )}

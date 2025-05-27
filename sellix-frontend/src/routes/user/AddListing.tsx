@@ -75,7 +75,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 };
 
 return (
-  <div className="max-w-xl mx-auto mt-4 p-8 rounded-2xl shadow-xl bg-gradient-to-br from-white/80 via-white/60 to-white/80 backdrop-blur-md border border-gray-200">
+  <div className="max-w-xl mx-auto mt-8 p-8 rounded-2xl shadow-xl bg-gradient-to-br from-white/80 via-white/60 to-white/80 backdrop-blur-md border border-gray-200">
     <div className="flex items-center gap-4 mb-8">
       <div className="bg-gradient-to-tr from-pink-500 via-purple-500 to-blue-500 rounded-2xl p-4 shadow-xl flex items-center justify-center animate-pulse">
       <svg width="32" height="32" fill="none" viewBox="0 0 24 24">

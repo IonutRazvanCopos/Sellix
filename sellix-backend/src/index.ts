@@ -5,6 +5,7 @@ import cors from 'cors';
 import fileUpload from 'express-fileupload';
 import listingRoutes from './routes/home/listingRoutes';
 import categoryRoutes from './routes/home/categoryRoutes';
+import userRoutes from './routes/user/userRoutes';
 
 
 const app = express();
@@ -17,5 +18,6 @@ const PORT = 3000;
 app.use('/api', authRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/users', userRoutes);
 
 app.listen(PORT);

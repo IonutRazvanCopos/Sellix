@@ -26,7 +26,8 @@
       "cancel": "Anulează Modificările",
       "myListings": "Anunțurile Mele",
       "noListings": "Momentan nu ai niciun anunț activ.",
-      "error": "A apărut o eroare la încărcarea datelor"
+      "error": "A apărut o eroare la încărcarea datelor",
+      "listings": "Anunțuri"
     },
     "auth": {
       "title": "Sellix",

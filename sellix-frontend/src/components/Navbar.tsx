@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import { Plus, User, LogOut, List, PlusCircle } from 'lucide-react';
+import { Plus, User, LogOut, List } from 'lucide-react';
 
 function Navbar() {
   const { isLoggedIn, logout } = useAuth();
@@ -80,7 +80,7 @@ function Navbar() {
                   {t('navbar.profile')}
                 </Link>
                 <Link
-                  to="/my-auctions"
+                  to="/profile/my-listings"
                   className="flex items-center px-4 py-2 hover:bg-gray-100 text-sm gap-2"
                 >
                   <List className="w-4 h-4" />
@@ -114,7 +114,6 @@ function Navbar() {
           </>
         )}
 
-        {/* LANG BUTTONS */}
         <div className="space-x-1">
           <button onClick={() => handleLanguageChange('ro')} className={getLangButtonStyle('ro')}>
             RO
@@ -124,6 +123,40 @@ function Navbar() {
           </button>
         </div>
       </div>
+
+      <div className="md:hidden">
+        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-700">
+          {isMobileMenuOpen ? (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+     {isMobileMenuOpen && (
+      <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg py-6 px-4 space-y-4 z-50 rounded-b-xl transition-all">
+        <Link to="/" className="block text-gray-800 font-semibold" onClick={() => setIsMobileMenuOpen(false)}>
+          {t('navbar.home')}
+        </Link>
+        <Link to="/profile" className="block text-gray-800 font-semibold" onClick={() => setIsMobileMenuOpen(false)}>
+          {t('navbar.profile')}
+        </Link>
+        <Link to="/profile/my-listings" className="block text-gray-800 font-semibold" onClick={() => setIsMobileMenuOpen(false)}>
+          {t('profile.myListings')}
+        </Link>
+        <Link to="/add-listing" className="block text-gray-800 font-semibold" onClick={() => setIsMobileMenuOpen(false)}>
+          {t('listings.addListing')}
+        </Link>
+        <button onClick={logout} className="block w-full text-left text-red-500 font-semibold">
+          {t('navbar.logout')}
+        </button>
+      </div>
+    )}
     </nav>
   );
 }

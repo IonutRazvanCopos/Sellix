@@ -11,6 +11,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from 'react';
 import AddListing from './routes/user/AddListing';
 import Footer from './components/Footer';
+import EditListing from './routes/user/EditListings';
+import ListingDetails from './routes/home/ListingDetails';
+import UserProfile from './routes/user/UserProfile';
 
 function App() {
   const { isLoggedIn, justLoggedIn, setJustLoggedIn } = useAuth();
@@ -56,11 +59,19 @@ function App() {
           {isLoggedIn && (
             <Route path="/profile" element={<Profile />} />
           )}
-          <Route path="/profile/:id" element={<Profile />} />
+           <Route path="/user/:id" element={<UserProfile />} />
           <Route
             path="/add-listing"
             element={isLoggedIn ? <AddListing /> : <Navigate to="/login" />}
           />
+          <Route
+            path="/edit-listing/:id"
+            element={
+              isLoggedIn ? <EditListing /> : <Navigate to="/login" />
+            }
+          />
+          <Route path="/listing/:id" element={<ListingDetails />} />
+          <Route path="/user/:id" element={<UserProfile />} />
         </Routes>
       </main>
       <Footer />

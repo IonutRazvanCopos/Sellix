@@ -4,6 +4,8 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 
 
 interface AuthContextType {
+  currentUser: any;
+  user: any;
   isLoggedIn: boolean;
   token: string | null;
   login: (token: string) => void;
@@ -15,10 +17,12 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
   token: null,
-  login: () => {},
-  logout: () => {},
+  login: () => { },
+  logout: () => { },
   justLoggedIn: false,
-  setJustLoggedIn: () => {},
+  setJustLoggedIn: () => { },
+  currentUser: undefined,
+  user: undefined
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -53,7 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, token, login, logout, justLoggedIn, setJustLoggedIn }}>
+    <AuthContext.Provider value={{ isLoggedIn, token, login, logout, justLoggedIn, setJustLoggedIn, currentUser: undefined, user: undefined }}>
       {children}
     </AuthContext.Provider>
   );

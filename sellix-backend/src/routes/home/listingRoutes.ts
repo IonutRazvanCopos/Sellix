@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
     const listings = await prisma.listing.findMany({
       include: {
         user: {
-          select: { username: true },
+          select: { username: true, id: true },
         },
         category: {
           select: { name: true },
@@ -90,6 +90,56 @@ router.post('/', verifyToken, async (req: AuthRequest, res) => {
   } catch (error) {
     console.error('Error creating listing:', error);
     res.status(500).json({ message: 'Failed to create listing.' });
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const listing = await prisma.listing.findUnique({
+      where: { id: Number(id) },
+      include: {
+        user: { select: { username: true, id: true } },
+        category: true,
+        images: true,
+      },
+    });
+
+    if (!listing) return res.status(404).json({ message: 'Listing not found' });
+    res.json(listing);
+  } catch (error) {
+    res.status(500).json({ message: 'Something went wrong' });
+  }
+});
+
+
+router.put('/:id', verifyToken, async (req: AuthRequest, res) => {
+  const listingId = parseInt(req.params.id);
+  const { title, description, price, currency, type, categoryId } = req.body;
+
+  try {
+    const existingListing = await prisma.listing.findUnique({ where: { id: listingId } });
+
+    if (!existingListing || existingListing.userId !== req.user!.userId) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    const updatedListing = await prisma.listing.update({
+      where: { id: listingId },
+      data: {
+        title,
+        description,
+        price: Number(price),
+        currency,
+        type,
+        categoryId: Number(categoryId),
+      },
+    });
+
+    res.json(updatedListing);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to update listing.' });
   }
 });
 
