@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
+import { jwtDecode } from 'jwt-decode';
 
 interface AuthContextType {
   currentUser: any;
@@ -29,21 +29,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [justLoggedIn, setJustLoggedIn] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
       setToken(storedToken);
       setIsLoggedIn(true);
+      const decoded: any = jwtDecode(storedToken);
+      setCurrentUser({
+        id: decoded.userId,
+        username: decoded.username,
+      });
     }
   }, []);
 
   const login = (token: string) => {
     localStorage.setItem('token', token);
-    localStorage.getItem('username');
     setToken(token);
     setIsLoggedIn(true);
     setJustLoggedIn(true);
+
+    const decoded: any = jwtDecode(token);
+    setCurrentUser({
+      id: decoded.userId,
+      username: decoded.username,
+    });
   };
 
   const logout = () => {
@@ -57,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, token, login, logout, justLoggedIn, setJustLoggedIn, currentUser: undefined, user: undefined }}>
+    <AuthContext.Provider value={{ isLoggedIn, token, login, logout, justLoggedIn, setJustLoggedIn, currentUser, user: currentUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -10,6 +10,13 @@ interface Category {
   name: string;
 }
 
+interface Subcategory {
+  id: number;
+  name: string;
+  categoryId: number;
+}
+
+
 function AddListing() {
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
@@ -22,6 +29,8 @@ function AddListing() {
   const [type, setType] = useState('SELL');
   const [categoryId, setCategoryId] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
+  const [subcategoryId, setSubcategoryId] = useState('');
   const [images, setImages] = useState<FileList | null>(null);
 
   useEffect(() => {
@@ -48,6 +57,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   try {
     const formData = new FormData();
+    
     const numericPrice = price.replace(/\./g, '');
     formData.append('title', title);
     formData.append('description', description);
@@ -55,6 +65,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     formData.append('currency', currency);
     formData.append('type', type);
     formData.append('categoryId', categoryId);
+    formData.append('subcategoryId', subcategoryId);
 
     if (images) {
       Array.from(images).forEach((img) => {
@@ -217,7 +228,21 @@ return (
       <div className="relative">
         <select
           value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
+         onChange={async (e) => {
+          const selectedCategoryId = e.target.value;
+          setCategoryId(selectedCategoryId);
+          setSubcategoryId('');
+          if (selectedCategoryId) {
+            try {
+              const res = await axios.get(`/categories/${selectedCategoryId}/subcategories`);
+              setSubcategories(res.data);
+            } catch (err) {
+              console.error('Could not load subcategories', err);
+            }
+          } else {
+            setSubcategories([]);
+          }
+        }}
           className="w-full appearance-none border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 text-gray-700 font-semibold pr-10"
           required
         >
@@ -228,11 +253,33 @@ return (
             </option>
           ))}
         </select>
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-          <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
+        {subcategories.length > 0 && (
+          <div className="relative mt-4">
+            <select
+              value={subcategoryId}
+              onChange={(e) => setSubcategoryId(e.target.value)}
+              className="w-full appearance-none border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 text-gray-700 font-semibold pr-10"
+              required
+            >
+              <option value="">{t("listings.selectSubcategory", "Select subcategory")}</option>
+              {subcategories.map((sub) => (
+                <option key={sub.id} value={sub.id}>
+                  {t(`subcategories.${sub.name}`, sub.name)}
+                </option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+              <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        )}
+          <div className="pointer-events-none absolute top-4 right-0 flex items-center pr-4">
+            <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
       </div>
 
       <button

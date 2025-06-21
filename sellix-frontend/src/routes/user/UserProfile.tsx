@@ -44,16 +44,29 @@ function UserProfile() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
-      <div className="flex items-center gap-6 mb-8">
-      <img
-        src={user.avatar ? `http://localhost:3000${user.avatar}` : 'https://via.placeholder.com/100'}
+      <div className="flex items-center gap-8 mb-10 bg-white rounded-2xl shadow-lg p-8">
+        <div className="relative">
+          <img
+        src={user.avatar ? `http://localhost:3000${user.avatar}` : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.username) + '&background=0D8ABC&color=fff&size=128'}
         alt="User avatar"
-        className="w-24 h-24 rounded-full object-cover shadow-lg"
-      />
-      <div>
-        <h1 className="text-3xl font-bold">{user.username}</h1>
-        <p className="text-gray-500">{user.city}, {user.county}</p>
-      </div>
+        className="w-28 h-28 rounded-full object-cover border-4 border-blue-500 shadow-xl"
+          />
+          <span className="absolute bottom-2 right-2 w-4 h-4 bg-green-400 border-2 border-white rounded-full"></span>
+        </div>
+        <div>
+          <h1 className="text-4xl font-extrabold text-gray-900 mb-2">{user.username}</h1>
+          <div className="flex items-center gap-2 text-gray-500">
+        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span className="font-medium">
+          {user.city && user.county
+            ? `${user.city}, ${user.county}`
+            : t("profile.noLocation") || "No available location"}
+        </span>
+          </div>
+        </div>
       </div>
 
       <h2 className="text-2xl font-semibold mb-4">{t("profile.listings") || "Listings"}</h2>

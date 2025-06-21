@@ -10,7 +10,7 @@ function PublicRoute({ children }: Props) {
   const { isLoggedIn } = useAuth();
 
   if (isLoggedIn) {
-    return <Navigate to="/auctions" />;
+    return <Navigate to="/" />;
   }
 
   return children;

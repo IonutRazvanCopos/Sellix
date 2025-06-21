@@ -14,6 +14,8 @@ import Footer from './components/Footer';
 import EditListing from './routes/user/EditListings';
 import ListingDetails from './routes/home/ListingDetails';
 import UserProfile from './routes/user/UserProfile';
+import Messages from './routes/user/Messages';
+
 
 function App() {
   const { isLoggedIn, justLoggedIn, setJustLoggedIn } = useAuth();
@@ -72,6 +74,7 @@ function App() {
           />
           <Route path="/listing/:id" element={<ListingDetails />} />
           <Route path="/user/:id" element={<UserProfile />} />
+          <Route path="/messages" element={<Messages />} />
         </Routes>
       </main>
       <Footer />

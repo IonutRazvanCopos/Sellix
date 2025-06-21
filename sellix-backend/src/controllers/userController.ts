@@ -9,6 +9,7 @@ import {
   updateProfile as updateUserProfile,
   getUserListings
 } from '../helpers/authHelpers';
+import prisma from '../config/prisma';
 
 export async function register(req: Request, res: Response) {
   try {
@@ -37,6 +38,7 @@ export async function register(req: Request, res: Response) {
 
 export async function login(req: Request, res: Response) {
   const { email, password } = req.body;
+  const user = await prisma.user.findUnique({ where: { email } });
 
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required.' });
@@ -49,7 +51,11 @@ export async function login(req: Request, res: Response) {
     const isPasswordValid = await comparePasswords(password, user.password);
     if (!isPasswordValid) return res.status(401).json({ message: 'Incorrect password.' });
 
-    const token = generateToken(user.id, user.email);
+    const token = generateToken(
+      user.id,
+      user.email ?? '',
+      user.username ?? ''
+    );
     return res.status(200).json({ message: 'Authentication successful!', token });
   } catch (error) {
     console.error(error);

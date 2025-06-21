@@ -5,14 +5,17 @@ import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import './i18n';
 import './index.css';
+import { ChatProvider } from './context/ChatContext';
 
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+    <ChatProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </ChatProvider>
     </BrowserRouter>
   </React.StrictMode>,
 );

@@ -14,7 +14,7 @@ function Register() {
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
     try {
-      const res = await axios.post('/register', { email, password });
+      const res = await axios.post('/user/register', { email, password });
       setMessage(res.data.message);
       setTimeout(function () {
         navigate('/login');

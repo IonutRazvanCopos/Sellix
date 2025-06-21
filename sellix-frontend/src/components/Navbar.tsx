@@ -3,22 +3,32 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { Plus, User, LogOut, List } from 'lucide-react';
+import { jwtDecode } from 'jwt-decode';
+
+interface DecodedToken {
+  username: string;
+}
 
 function Navbar() {
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, token } = useAuth();
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const currentLang = i18n.language;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedName = localStorage.getItem('username');
-    if (storedName) {
-      setUsername(storedName);
+    if (token) {
+      try {
+        const decoded = jwtDecode<DecodedToken>(token);
+        setUsername(decoded.username);
+      } catch (error) {
+        console.error('Failed to decode token:', error);
+        setUsername(null);
+      }
     }
-  }, [isLoggedIn]);
+  }, [token]);
 
   function getNavLinkClass(path: string) {
     const isActive = location.pathname === path;
@@ -71,36 +81,47 @@ function Navbar() {
             </button>
 
             {showDropdown && (
-              <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg w-48 z-50 overflow-hidden border border-gray-100">
+                <div className="absolute right-0 mt-2 bg-white shadow-xl rounded-xl w-56 z-50 overflow-hidden border border-gray-200 animate-fade-in">
                 <Link
                   to="/profile"
-                  className="flex items-center px-4 py-2 hover:bg-gray-100 text-sm gap-2"
+                  className="flex items-center px-5 py-3 hover:bg-blue-50 text-sm gap-2 transition-colors duration-150"
                 >
-                  <User className="w-4 h-4" />
-                  {t('navbar.profile')}
+                  <User className="w-4 h-4 text-blue-500" />
+                  <span className="text-gray-700">{t('navbar.profile')}</span>
                 </Link>
                 <Link
                   to="/profile/my-listings"
-                  className="flex items-center px-4 py-2 hover:bg-gray-100 text-sm gap-2"
+                  className="flex items-center px-5 py-3 hover:bg-blue-50 text-sm gap-2 transition-colors duration-150"
                 >
-                  <List className="w-4 h-4" />
-                  {t("profile.myListings")}
+                  <List className="w-4 h-4 text-purple-500" />
+                  <span className="text-gray-700">{t("profile.myListings")}</span>
                 </Link>
                 <Link
                   to="/add-listing"
-                  className="flex items-center px-4 py-2 hover:bg-gray-100 text-sm gap-2"
+                  className="flex items-center px-5 py-3 hover:bg-blue-50 text-sm gap-2 transition-colors duration-150"
                 >
-                  <Plus className="w-4 h-4" />
-                  {t('listings.addListing')}
+                  <Plus className="w-4 h-4 text-pink-500" />
+                  <span className="text-gray-700">{t('listings.addListing')}</span>
                 </Link>
+                {isLoggedIn && (
+                  <Link
+                  to="/messages"
+                  className="flex items-center px-5 py-3 text-blue-600 font-semibold hover:bg-blue-50 text-sm gap-2 transition-colors duration-150"
+                  >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                  </svg>
+                  Mesajele mele
+                  </Link>
+                )}
                 <button
                   onClick={logout}
-                  className="w-full text-left text-red-600 flex items-center px-4 py-2 hover:bg-gray-100 text-sm gap-2"
+                  className="w-full text-left text-red-600 flex items-center px-5 py-3 hover:bg-red-50 text-sm gap-2 transition-colors duration-150 border-t border-gray-100"
                 >
                   <LogOut className="w-4 h-4" />
-                  {t('navbar.logout')}
+                  <span>{t('navbar.logout')}</span>
                 </button>
-              </div>
+                </div>
             )}
           </div>
         ) : (
@@ -152,6 +173,11 @@ function Navbar() {
         <Link to="/add-listing" className="block text-gray-800 font-semibold" onClick={() => setIsMobileMenuOpen(false)}>
           {t('listings.addListing')}
         </Link>
+        {isLoggedIn && (
+          <Link to="/messages" className="text-blue-500 font-semibold">
+            Mesajele mele
+          </Link>
+        )}
         <button onClick={logout} className="block w-full text-left text-red-500 font-semibold">
           {t('navbar.logout')}
         </button>

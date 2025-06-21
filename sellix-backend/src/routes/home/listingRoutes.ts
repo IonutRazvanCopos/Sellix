@@ -10,9 +10,12 @@ router.get('/', async (req, res) => {
     const listings = await prisma.listing.findMany({
       include: {
         user: {
-          select: { username: true, id: true },
+          select: { username: true, id: true, avatar: true },
         },
         category: {
+          select: { name: true },
+        },
+        subcategory: {
           select: { name: true },
         },
         images: true,
@@ -49,7 +52,7 @@ router.get('/profile', verifyToken, async (req: AuthRequest, res) => {
 });
 
 router.post('/', verifyToken, async (req: AuthRequest, res) => {
-  const { title, description, price, currency, type, categoryId } = req.body;
+  const { title, description, price, currency, type, categoryId, subcategoryId } = req.body;
   const files = req.files?.images;
 
   if (!title || !description || !price || !currency || !type || !categoryId) {
@@ -65,7 +68,8 @@ router.post('/', verifyToken, async (req: AuthRequest, res) => {
         currency,
         type,
         categoryId: Number(categoryId),
-        userId: req.user!.userId,
+        subcategoryId: subcategoryId ? Number(subcategoryId) : null,
+        userId: req.user!.userId
       },
     });
 
@@ -99,8 +103,9 @@ router.get('/:id', async (req, res) => {
     const listing = await prisma.listing.findUnique({
       where: { id: Number(id) },
       include: {
-        user: { select: { username: true, id: true } },
+        user: { select: { username: true, id: true, avatar: true } },
         category: true,
+        subcategory: true,
         images: true,
       },
     });
@@ -115,7 +120,7 @@ router.get('/:id', async (req, res) => {
 
 router.put('/:id', verifyToken, async (req: AuthRequest, res) => {
   const listingId = parseInt(req.params.id);
-  const { title, description, price, currency, type, categoryId } = req.body;
+  const { title, description, price, currency, type, categoryId, subcategoryId } = req.body;
 
   try {
     const existingListing = await prisma.listing.findUnique({ where: { id: listingId } });
@@ -133,6 +138,7 @@ router.put('/:id', verifyToken, async (req: AuthRequest, res) => {
         currency,
         type,
         categoryId: Number(categoryId),
+        subcategoryId: subcategoryId ? Number(subcategoryId) : null,
       },
     });
 

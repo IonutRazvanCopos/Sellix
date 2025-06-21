@@ -22,7 +22,7 @@ router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const listings = yield prisma.listing.findMany({
             include: {
                 user: {
-                    select: { username: true },
+                    select: { username: true, id: true },
                 },
                 category: {
                     select: { name: true },
@@ -94,6 +94,51 @@ router.post('/', authMiddleware_1.verifyToken, (req, res) => __awaiter(void 0, v
     catch (error) {
         console.error('Error creating listing:', error);
         res.status(500).json({ message: 'Failed to create listing.' });
+    }
+}));
+router.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const listing = yield prisma.listing.findUnique({
+            where: { id: Number(id) },
+            include: {
+                user: { select: { username: true, id: true } },
+                category: true,
+                images: true,
+            },
+        });
+        if (!listing)
+            return res.status(404).json({ message: 'Listing not found' });
+        res.json(listing);
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+}));
+router.put('/:id', authMiddleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const listingId = parseInt(req.params.id);
+    const { title, description, price, currency, type, categoryId } = req.body;
+    try {
+        const existingListing = yield prisma.listing.findUnique({ where: { id: listingId } });
+        if (!existingListing || existingListing.userId !== req.user.userId) {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
+        const updatedListing = yield prisma.listing.update({
+            where: { id: listingId },
+            data: {
+                title,
+                description,
+                price: Number(price),
+                currency,
+                type,
+                categoryId: Number(categoryId),
+            },
+        });
+        res.json(updatedListing);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to update listing.' });
     }
 }));
 exports.default = router;
