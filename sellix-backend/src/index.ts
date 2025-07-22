@@ -38,6 +38,4 @@ const io = new Server(httpServer, {
 
 setupChatSocket(io);
 
-httpServer.listen(PORT, () => {
-  console.log(`✅ Server is running at http://localhost:${PORT}`);
-});
+httpServer.listen(PORT);
