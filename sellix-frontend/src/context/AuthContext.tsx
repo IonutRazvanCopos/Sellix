@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import { decode } from 'punycode';
 
 interface AuthContextType {
   currentUser: any;
@@ -40,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setCurrentUser({
         id: decoded.userId,
         username: decoded.username,
+        role: decoded.role,
       });
     }
   }, []);

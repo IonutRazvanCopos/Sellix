@@ -54,7 +54,8 @@ export async function login(req: Request, res: Response) {
     const token = generateToken(
       user.id,
       user.email ?? '',
-      user.username ?? ''
+      user.username ?? '',
+      user.role
     );
     return res.status(200).json({ message: 'Authentication successful!', token });
   } catch (error) {

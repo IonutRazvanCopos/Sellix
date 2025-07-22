@@ -11,7 +11,7 @@ import { ChatProvider } from './context/ChatContext';
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
-    <ChatProvider>
+      <ChatProvider>
         <AuthProvider>
           <App />
         </AuthProvider>

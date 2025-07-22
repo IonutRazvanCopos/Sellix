@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export interface AuthRequest extends Request {
-  user?: { userId: number; email: string };
+  user?: { userId: number; email: string; role: string };
 }
 
 export function verifyToken(req: AuthRequest, res: Response, next: NextFunction) {
@@ -21,9 +21,16 @@ export function verifyToken(req: AuthRequest, res: Response, next: NextFunction)
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
       userId: number;
       email: string;
+      role: string;
+      username: string;
     };
 
-    req.user = decoded;
+    req.user = {
+      userId: decoded.userId,
+      email: decoded.email,
+      role: decoded.role
+    };
+
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Invalid or expired token.' });

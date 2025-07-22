@@ -10,6 +10,7 @@ import categoryRoutes from './routes/home/categoryRoutes';
 import userRoutes from './routes/user/userRoutes';
 import { setupChatSocket } from './socket/chatSocket';
 import messageRoutes from './routes/messages';
+import adminRoutes from './routes/user/adminRoutes';
 
 const app = express();
 const PORT = 3000;
@@ -22,6 +23,7 @@ app.use('/uploads', express.static('public/uploads'));
 app.use('/api', authRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
 

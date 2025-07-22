@@ -16,8 +16,8 @@ export async function createUser(email: string, password: string) {
   });
 }
 
-export function generateToken(userId: number, email: string, username: string) {
-  return jwt.sign({ userId, email, username }, process.env.JWT_SECRET!, {
+export function generateToken(userId: number, email: string, username: string, role: string) {
+  return jwt.sign({ userId, email, username, role }, process.env.JWT_SECRET!, {
     expiresIn: '8h',
   });
 }
@@ -36,6 +36,7 @@ export async function getUserProfile(userId: number) {
       username: true,
       phone: true,
       city: true,
+      role: true,
       county: true,
       avatar: true,
     },

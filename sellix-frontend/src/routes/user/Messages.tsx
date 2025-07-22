@@ -5,6 +5,7 @@ import ChatWindow from "../../components/Chat/ChatWindow";
 interface Conversation {
   id: number;
   listing: {
+    images: any;
     id: number;
     title: string;
   };
@@ -30,11 +31,19 @@ function Messages() {
       try {
         const res = await fetch(`http://localhost:3000/api/messages/${currentUser.id}`);
         const data = await res.json();
-        setConversations(data);
-      } catch (err) {
-        console.error("Eroare la încărcarea conversațiilor:", err);
-      }
-    };
+
+        const sorted = data.sort((a: Conversation, b: Conversation) => {
+          const lastMessageA = a.messages[a.messages.length - 1]?.timestamp || '';
+          const lastMessageB = b.messages[b.messages.length - 1]?.timestamp || '';
+          return new Date(lastMessageB).getTime() - new Date(lastMessageA).getTime();
+        });
+
+      setConversations(sorted);
+    } catch (err) {
+      console.error("Eroare la încărcarea conversațiilor:", err);
+    }
+  };
+
 
     fetchConversations();
   }, [isLoggedIn, currentUser?.id]);
@@ -92,6 +101,13 @@ function Messages() {
                         {conv.listing?.title || "Anunț"}
                       </div>
                     </div>
+                    {conv.listing?.images && conv.listing.images.length > 0 && conv.listing.images[0]?.url && (
+                      <img
+                      src={`http://localhost:3000${conv.listing.images[0].url}`}
+                      alt="Anunț"
+                      className="w-12 h-12 rounded-lg object-cover shadow-sm border auto ml-auto"
+                      />
+                    )}
                   </li>
                 );
               })}
@@ -125,7 +141,7 @@ function Messages() {
                   })()}
                 </h2>
                 <button
-                  className="text-sm text-red-500 hover:underline px-2 py-1 rounded transition"
+                  className="text-sm text-red-500 hover:underline px-2 py-1 rounded transition cursor-pointer"
                   onClick={() => setActiveConversation(null)}
                   title="Închide conversația"
                 >

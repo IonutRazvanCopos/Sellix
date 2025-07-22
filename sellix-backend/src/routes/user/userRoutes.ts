@@ -13,6 +13,7 @@ router.get('/:id', async (req, res) => {
         username: true,
         city: true,
         county: true,
+        role: true,
         avatar: true,
         listings: {
           select: { id: true, title: true, description: true, price: true, currency: true, createdAt: true, images: { select: { url: true } } },

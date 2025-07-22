@@ -44,7 +44,7 @@ function MessageInput({ onSend }: MessageInputProps) {
       <button
         onClick={handleSubmit}
         disabled={isSending}
-        className={`px-6 py-2 rounded-xl font-bold shadow-lg transition active:scale-95 ${
+        className={`px-6 py-2 rounded-xl font-bold shadow-lg transition active:scale-95 cursor-pointer ${
           isSending
             ? "bg-gray-300 text-white cursor-not-allowed"
             : "bg-gradient-to-r from-[#4e9fff] to-[#ff4ecd] text-white hover:from-[#3a7fd5] hover:to-[#d946ef]"

@@ -22,7 +22,7 @@ router.get('/:userId', async (req, res) => {
         ...(listingId ? { listingId } : {}),
       },
       include: {
-        listing: { select: { id: true, title: true } },
+        listing: { select: { id: true, title: true, images: true } },
         participants: { select: { id: true, username: true, avatar: true } },
         messages: { orderBy: { timestamp: 'asc' } },
       },

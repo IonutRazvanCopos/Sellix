@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import { createListing } from '../../api/listingApi';
 
 interface Category {
   id: number;
@@ -19,6 +20,7 @@ interface Subcategory {
 
 function AddListing() {
   const { isLoggedIn } = useAuth();
+  const { token } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -47,7 +49,7 @@ function AddListing() {
       });
   }, [isLoggedIn, navigate]);
 
-const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
   if (!title || !description || !price || !categoryId) {
@@ -73,9 +75,12 @@ const handleSubmit = async (e: React.FormEvent) => {
       });
     }
 
-    await axios.post('/listings', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    if (!token) {
+      toast.error("You must be logged in.");
+      return;
+    }
+
+    await createListing(formData, token);
 
     toast.success('Listing created successfully!');
     navigate('/');

@@ -1,6 +1,7 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { AuthRequest, verifyToken } from '../../middlewares/authMiddleware';
+import { createListing, getMyListings } from '../../controllers/listingController';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -8,6 +9,10 @@ const prisma = new PrismaClient();
 router.get('/', async (req, res) => {
   try {
     const listings = await prisma.listing.findMany({
+      where: {
+        approved: true,
+        visible: true,
+      },
       include: {
         user: {
           select: { username: true, id: true, avatar: true },
@@ -21,8 +26,7 @@ router.get('/', async (req, res) => {
         images: true,
       },
       orderBy: { createdAt: 'desc' },
-});
-
+    });
 
     res.json(listings);
   } catch (error) {
@@ -148,5 +152,8 @@ router.put('/:id', verifyToken, async (req: AuthRequest, res) => {
     res.status(500).json({ message: 'Failed to update listing.' });
   }
 });
+
+router.post('/create', verifyToken, createListing);
+router.get('/me', verifyToken, getMyListings);
 
 export default router;

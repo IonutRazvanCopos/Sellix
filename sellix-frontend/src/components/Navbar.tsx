@@ -17,6 +17,7 @@ function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     if (token) {
@@ -63,6 +64,15 @@ function Navbar() {
           <Plus className="w-6 h-6" />
         </Link>
       </div>
+      
+      {currentUser?.role === 'ADMIN' && (
+        <div className="ml-auto hidden md:flex items-center -translate-x-2 px-2">
+          <Link to="/admin-dashboard" className="text-white font-medium px-3 py-2 rounded bg-blue-600 hover:bg-blue-700">
+            Admin
+          </Link>
+        </div>
+      )}
+
 
       <div className="hidden md:flex items-center space-x-4">
         <Link to="/" className={getNavLinkClass('/')}>

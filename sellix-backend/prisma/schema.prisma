@@ -22,6 +22,12 @@ model User {
   sentMessages     Message[]      @relation("MessagesSent")
   receivedMessages Message[]      @relation("MessagesReceived")
   conversations    Conversation[] @relation("ConversationParticipants")
+  role             Role           @default(USER)
+}
+
+enum Role {
+  ADMIN
+  USER
 }
 
 model Message {
@@ -66,6 +72,9 @@ model Listing {
   images        Image[]
   conversations Conversation[]
   messages      Message[]
+
+  approved   Boolean   @default(false)
+  visible    Boolean   @default(true)
 }
 
 model Image {
