@@ -2,11 +2,22 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { decode } from 'punycode';
+
+interface DecodedToken {
+  userId: number;
+  email?: string;
+  username: string;
+  role: string;
+}
+
+interface User {
+  id: number;
+  username: string;
+  role: string;
+}
 
 interface AuthContextType {
-  currentUser: any;
-  user: any;
+  currentUser: User | null;
   isLoggedIn: boolean;
   token: string | null;
   login: (token: string) => void;
@@ -18,59 +29,80 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
   token: null,
-  login: () => { },
-  logout: () => { },
+  login: () => {},
+  logout: () => {},
   justLoggedIn: false,
-  setJustLoggedIn: () => { },
-  currentUser: undefined,
-  user: undefined
+  setJustLoggedIn: () => {},
+  currentUser: null
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [justLoggedIn, setJustLoggedIn] = useState<boolean>(false);
-  const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
-    if (storedToken) {
-      setToken(storedToken);
-      setIsLoggedIn(true);
-      const decoded: any = jwtDecode(storedToken);
-      setCurrentUser({
-        id: decoded.userId,
-        username: decoded.username,
-        role: decoded.role,
-      });
+
+    if (storedToken && storedToken !== 'undefined') {
+      try {
+        const decoded: DecodedToken = jwtDecode(storedToken);
+
+        setToken(storedToken);
+        setIsLoggedIn(true);
+        setCurrentUser({
+          id: decoded.userId,
+          username: decoded.username,
+          role: decoded.role
+        });
+      } catch (error) {
+        console.error('Token invalid sau expirat:', error);
+        localStorage.removeItem('token');
+      }
     }
   }, []);
 
   const login = (token: string) => {
-    localStorage.setItem('token', token);
-    setToken(token);
-    setIsLoggedIn(true);
-    setJustLoggedIn(true);
+    try {
+      const decoded: DecodedToken = jwtDecode(token);
 
-    const decoded: any = jwtDecode(token);
-    setCurrentUser({
-      id: decoded.userId,
-      username: decoded.username,
-    });
+      localStorage.setItem('token', token);
+      setToken(token);
+      setIsLoggedIn(true);
+      setJustLoggedIn(true);
+
+      setCurrentUser({
+        id: decoded.userId,
+        username: decoded.username,
+        role: decoded.role
+      });
+    } catch (error) {
+      console.error('Token invalid la login:', error);
+    }
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('loginToastShown');
-    localStorage.removeItem('username');
     setToken(null);
     setIsLoggedIn(false);
     setJustLoggedIn(false);
-
+    setCurrentUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, token, login, logout, justLoggedIn, setJustLoggedIn, currentUser, user: currentUser }}>
+    <AuthContext.Provider
+      value={{
+        token,
+        isLoggedIn,
+        login,
+        logout,
+        justLoggedIn,
+        setJustLoggedIn,
+        currentUser
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
