@@ -1,15 +1,5 @@
 import { FC, useState } from 'react';
-
-interface Listing {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  images: { url: string }[];
-  user: { username: string };
-  category: { name: string };
-  subcategory?: { name: string };
-}
+import { Listing } from '../../types';
 
 interface Props {
   listings: Listing[];

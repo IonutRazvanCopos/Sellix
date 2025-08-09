@@ -4,7 +4,7 @@ import { AuthRequest } from '../middlewares/authMiddleware';
 
 export async function getPendingListings(req: Request, res: Response) {
   const listings = await prisma.listing.findMany({
-    where: { approved: false },
+    where: { approved: false, visible: true },
     include: { user: true, category: true, subcategory: true, images: true }
   });
   res.json(listings);
