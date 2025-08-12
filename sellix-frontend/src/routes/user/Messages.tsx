@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import ChatWindow from "../../components/Chat/ChatWindow";
+import ChatWindow from "../../components/chat/ChatWindow";
 
 interface Conversation {
   id: number;

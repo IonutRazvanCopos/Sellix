@@ -7,7 +7,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { FiArrowLeft } from "react-icons/fi";
 import clsx from "clsx";
-import ChatWindow from '../../components/Chat/ChatWindow';
+import ChatWindow from '../../components/chat/ChatWindow';
 
 interface Listing {
   category: any;

@@ -1,6 +1,6 @@
 import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
-import ListingList from '../../components/admin/ListingList';
+import ListingList from '../../components/listing/ListingList';
 import AddCategory from '../../components/admin/AddCategory';
 import AddSubcategory from '../../components/admin/AddSubcategory';
 import { useAdminListings } from '../../hooks/useAdminListings';
